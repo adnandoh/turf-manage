@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+// Get API base URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://turf-backend-production.up.railway.app';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT) || 15000,
 });
 
 // Add auth token to requests if available
@@ -15,14 +17,18 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Token ${token}`;
   }
+  console.log(`🏏 ADMIN API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
   return config;
 });
 
 // Error handling interceptor
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log(`✅ ADMIN API Response: ${response.status} ${response.config.url}`);
+    return response;
+  },
   (error) => {
-    console.error('API Error:', error.response || error);
+    console.error(`❌ ADMIN API Error: ${error.response?.status} ${error.config?.url}`, error.response?.data);
     return Promise.reject(error);
   }
 );
