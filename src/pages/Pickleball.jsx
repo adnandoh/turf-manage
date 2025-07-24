@@ -93,7 +93,7 @@ const Pickleball = () => {
     } finally {
       setLoading(false);
     }
-  }, [formattedDate, enqueueSnackbar]);
+  }, [formattedDate]);
   
   useEffect(() => {
     console.log('🏓 PICKLEBALL: Component mounted/updated, calling fetchSlots');

@@ -93,7 +93,7 @@ const Cricket = () => {
     } finally {
       setLoading(false);
     }
-  }, [formattedDate, enqueueSnackbar]);
+  }, [formattedDate]);
 
   useEffect(() => {
     console.log('🏏 CRICKET: Component mounted/updated, calling fetchSlots');

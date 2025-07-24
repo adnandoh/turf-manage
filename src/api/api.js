@@ -1,13 +1,14 @@
 import axios from 'axios';
 
 // Get API base URL from environment variables
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://turf-backend-production.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Important for CORS with credentials
   timeout: parseInt(import.meta.env.VITE_API_TIMEOUT) || 15000,
 });
 
@@ -73,23 +74,12 @@ export const cricketService = {
   
   // Block all slots for a specific date
   blockDate: (date, reason) => {
-    // Create blocks for all 24 hours of the day
-    const promises = [];
-    for (let hour = 0; hour < 24; hour++) {
-      const startTime = `${hour.toString().padStart(2, '0')}:00`;
-      const endTime = `${(hour + 1) % 24}`.padStart(2, '0') + ':00';
-      
-      const blockData = {
-        date: date,
-        start_time: startTime,
-        end_time: endTime,
-        reason: reason
-      };
-      
-      promises.push(api.post('/api/cricket/blocks/', blockData));
-    }
-    
-    return Promise.all(promises);
+    // Use a single API call to block all slots for a date
+    // This reduces multiple API calls and improves performance
+    return api.post('/api/cricket/blocks/block-date/', {
+      date: date,
+      reason: reason
+    });
   },
   
   // Block multiple dates at once
@@ -122,23 +112,12 @@ export const pickleballService = {
   
   // Block all slots for a specific date
   blockDate: (date, reason) => {
-    // Create blocks for all 24 hours of the day
-    const promises = [];
-    for (let hour = 0; hour < 24; hour++) {
-      const startTime = `${hour.toString().padStart(2, '0')}:00`;
-      const endTime = `${(hour + 1) % 24}`.padStart(2, '0') + ':00';
-      
-      const blockData = {
-        date: date,
-        start_time: startTime,
-        end_time: endTime,
-        reason: reason
-      };
-      
-      promises.push(api.post('/api/pickleball/blocks/', blockData));
-    }
-    
-    return Promise.all(promises);
+    // Use a single API call to block all slots for a date
+    // This reduces multiple API calls and improves performance
+    return api.post('/api/pickleball/blocks/block-date/', {
+      date: date,
+      reason: reason
+    });
   },
   
   // Block multiple dates at once
